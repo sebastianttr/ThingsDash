@@ -1,0 +1,154 @@
+ttn_uplink = ramVar("ttn_uplink");
+
+sensorNodeMessagesLoRa = ramVar("nodeMessagesLoRa",{});
+
+userData = ramVar("userData",{});
+userWidgets = ramVar("userWidgets",{});
+userThingsscripts = ramVar("userThingsscripts",{});
+userCloudsscripts = ramVar("userCloudsscripts",{});
+
+savewidgets=false;
+
+
+if (action=="init")
+{
+  if (defined(db.userWidgets))
+  {
+    userWidgets=db.userWidgets;
+  }
+  else
+  {
+    userWidgets={
+      keytatar:{
+        userdata:{},
+        widgets:[],
+      },
+      keyforster:{
+        userdata:{},
+        widgets:[],
+      },
+      keywieser:{
+        userdata:{},
+        widgets:[],
+      },
+      iotusecases:{
+        userdata:{},
+        widgets:[],
+      },
+      iotusecases_wg:{
+        userdata:{},
+        widgets:[],
+      }
+    };
+  }
+}
+
+
+if (action=="http")
+{
+  if (name=="test")
+  {
+    res=testprog;
+  }
+  if (name=="uplink"){
+    ttn_uplink = value;
+    sensorNodeMessagesLoRa[value.dev_id] = value.payload_fields.Message;
+    res = "UPLINK RECEIVED 200";
+  }
+  if (name=="getLoRaMessages"){
+    res = sensorNodeMessagesLoRa[value];
+  }
+  if (name=="node1_temp"){
+    res = node1[0];
+  }
+  if (name=="node1_hum"){
+    res = node1[1];
+  }
+  if (name=="node1_alt"){
+    res = node1[2];
+  }
+  if (name=="adduser" && defined(value)){
+    if (defined(userWidgets[value])==false)
+    {
+      userWidgets[value]={widgets:[]};
+    }
+  }
+  
+  /***************** START Widget CRUD ********************/
+  
+  if (name=="addWidget" && defined(value)){
+    // userWidgets={tatar:{...}, wg:{...}}
+    foreach(username in userWidgets)
+    {
+      if (usedKey(username))
+      {
+        pushArray(userWidgets[username].widgets,{title:value});
+        //savewidgets=true;
+      }
+    }
+    savewidgets=true;
+  }
+  if (name=="removeWidget"){
+    foreach(username in userWidgets)
+    {
+      if (usedKey(username))
+      {
+        index = 0;
+        foreach(thing in userWidgets[username].widgets){
+          if(thing.title == value){
+            removeArrayAt(userWidgets[username].widgets,index);
+          }
+          index = index + 1;
+        }
+        //pushArray(userWidgets[username].widgets,{title:value});
+      }
+    }
+    savewidgets=true;
+    res = "done";
+  }
+  if (name=="updateWidget"){
+    foreach(username in userWidgets)
+    {
+      if (usedKey(username))
+      {
+        index = 0;
+        foreach(thing in userWidgets[username].widgets){
+          if(thing.title == value.title){
+            userWidgets[username].widgets[index] = value;
+          }
+          index = index + 1;
+        }
+        //pushArray(userWidgets[username].widgets,{title:value});
+        //savewidgets=true;
+      }
+    }
+    savewidgets=true;
+  }
+  
+  
+  /***************** END Widget CRUD ********************/
+  
+  if (name=="userdata"){
+    keyname;
+    foreach(username in userWidgets)
+    {
+      if (usedKey(username))
+      {
+        keyname = username;
+      }
+    }
+    
+    res ={
+      userdata:{
+        singleURLFetch:true,
+        urls:null
+      },
+      widgets:userWidgets[keyname].widgets
+    }; 
+  }
+}
+
+if (savewidgets==true)
+{
+  writeDB("userWidgets",userWidgets);
+}

@@ -1,0 +1,53 @@
+{
+    "title": "keytatar",
+    "widgets": [{
+            "type": "button",
+            "name": "button_0",
+            "label": "New Button",
+            "x": 30,
+            "y": 35,
+            "width": 130,
+            "height": 50,
+            "color": "green",
+            "onClick": "http://..."
+        },
+        {
+            "type": "button",
+            "name": "button_1",
+            "label": "New Button",
+            "x": 180,
+            "y": 34,
+            "width": 130,
+            "height": 50,
+            "color": "green",
+            "onClick": "http://..."
+        },
+        {
+            "type": "text",
+            "name": "label_2",
+            "label": "New Text",
+            "size": "text-h7",
+            "x": 30,
+            "y": 104,
+            "width": 280,
+            "height": 50,
+            "dynamic": false,
+            "postProcess": ""
+        },
+        {
+            "type": "togglebutton",
+            "name": "togglebutton_3",
+            "x": 30,
+            "y": 135,
+            "width": 280,
+            "height": 50,
+            "color": "green",
+            "toggle": false,
+            "onTrue": "http://...",
+            "onFalse": "http://...",
+            "text": "True Text",
+            "onTrueText": "True Text",
+            "onFalseText": "False Text"
+        }
+    ]
+}
