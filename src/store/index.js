@@ -11,49 +11,19 @@ Vue.use(Vuex)
 Vue.use(VueCookies);
 Vue.$cookies.config("7d");
 
-//https://flaviocopes.com/vuex/
-/*
- * If not building with SSR mode, you can
- * directly export the Store instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves 
- * with the Store instance.
- */
-
-
-
 export default function( /* { ssrContext } */ ) {
     const Store = new Vuex.Store({
         plugins: [createPersistedState({
             storage: window.sessionStorage,
         })],
         state: {
-            defaultDashboard: [{
-                title: 'UI Test Thing', //UI Test Thing
-                height: 30,
-                widgets: [
-                    { type: 'text', name: "text1", label: 'All upper case', width: 150, height: 50, x: 15, y: 15, },
-                    { type: 'toggle', name: "toggle1", label: 'Toggle Here', state: true, width: 150, height: 50, x: 100, y: 0, onToggle: 'storeUpdate' },
-                    { type: 'input', name: "input1", label: 'Enter Name:', width: 250, height: 50, x: 10, y: 50, },
-                    { type: 'button', name: "button1", label: 'Send', width: 80, height: 50, x: 265, y: 50, onClick: 'alert(\'Button 1 pressed!\')' },
-                    { type: 'slider', name: "slider1", min: 0, max: 4095, step: 1, value: 3000, width: 250, height: 50, x: 15, y: 120 }
-                ]
-            }, ],
             firstname: "Max",
             lastname: "Muster",
             username: null,
             password: null,
             widgets: null,
             userLoggedIn: null,
-            cloudscript: null,
             singleURLState: null,
-            singleURL: null,
-            changeSingleURLStateURL: null, //WTF?????? 
-            widgetsURL: null,
-            thingsscriptURL: null,
-            cloudscriptURL: null,
-
         },
         mutations: {
             putUsername(state, payload) {
@@ -68,26 +38,11 @@ export default function( /* { ssrContext } */ ) {
             putUserLoggedIn(state, payload) {
                 state.userLoggedIn = payload;
             },
-            putCloudScript(state, payload) {
-                state.cloudscript = payload;
-            },
             putSingleURLState(state, payload) {
                 state.singleURLState = payload;
             },
             putSingleURL(state, payload) {
                 state.singleURL = payload;
-            },
-            putChangeSingleURLStateURL(state, payload) {
-                state.changeSingleURLStateURL = payload;
-            },
-            putWidgetsURL(state, payload) {
-                state.widgetsURL = payload;
-            },
-            putThingscriptURL(state, payload) {
-                state.thingsscriptURL = payload;
-            },
-            putCloudscriptURL(state, payload) {
-                state.cloudscriptURL = payload;
             },
             mutateWidgetLabels(state, payload) {
                 state.widgets[payload.index] = payload.data;
@@ -96,9 +51,6 @@ export default function( /* { ssrContext } */ ) {
 
         },
         getters: {
-            defaultDashboard(state) {
-                return state.defaultDashboard;
-            },
             firstname(state) {
                 return state.firstname;
             },
@@ -117,27 +69,6 @@ export default function( /* { ssrContext } */ ) {
             },
             userLoggedIn(state) {
                 return state.userLoggedIn;
-            },
-            cloudscript(state) {
-                return state.cloudscript;
-            },
-            singleURLState(state) {
-                return state.singleURLState;
-            },
-            singleURL(state) {
-                return state.singleURL;
-            },
-            changeSingleURLStateURL(state) {
-                return state.changeSingleURLStateURL;
-            },
-            widgetsURL(state) {
-                return state.widgetsURL;
-            },
-            thingsscriptURL(state) {
-                return state.thingsscriptURL;
-            },
-            cloudscriptURL(state) {
-                return state.cloudscriptURL;
             },
         },
 
@@ -165,27 +96,10 @@ export default function( /* { ssrContext } */ ) {
                             if (response.data.userdata.singleURLFetch == true) {
                                 commit("putWidgets", response.data.widgets);
                                 commit("putCloudScript", response.data.cloudscripts);
-                                /*
-                                commit("putSingleURL", response.data.userdata.singleURLFetch);
-                                commit("putWidgetsURL", response.data.userdata.urls.widgetsURL);
-                                commit("putSingleURLState", response.data.userdata.urls.singleURLChange);
-                                commit("putCloudscriptURL", response.data.userdata.urls.cloudscriptURL);
-                                */
                                 commit("putUserLoggedIn", true);
                             } else {
                                 /*
-                                let widgets = this.getfromBroker(
-                                  response.data.userdata.urls.widgetsURL +
-                                  this.username +
-                                  ":" +
-                                  this.password
-                                );
-                                let cloudscript = this.getfromBroker(
-                                  response.data.userdata.urls.cloudscriptURL
-                                );
-                                this.$store.commit("putWidgets", widgets);
-                                this.$store.commit("putCloudScript", cloudscript);
-                                */
+                                 */
                             }
                         }
                     })
@@ -220,27 +134,10 @@ export default function( /* { ssrContext } */ ) {
                                     if (response.data.userdata.singleURLFetch == true) {
                                         commit("putWidgets", response.data.widgets);
                                         commit("putCloudScript", response.data.cloudscripts);
-                                        /*
-                                        commit("putSingleURL", response.data.userdata.singleURLFetch);
-                                        commit("putWidgetsURL", response.data.userdata.urls.widgetsURL);
-                                        commit("putSingleURLState", response.data.userdata.urls.singleURLChange);
-                                        commit("putCloudscriptURL", response.data.userdata.urls.cloudscriptURL);
-                                        */
                                         commit("putUserLoggedIn", true);
                                     } else {
                                         /*
-                                        let widgets = this.getfromBroker(
-                                          response.data.userdata.urls.widgetsURL +
-                                          this.username +
-                                          ":" +
-                                          this.password
-                                        );
-                                        let cloudscript = this.getfromBroker(
-                                          response.data.userdata.urls.cloudscriptURL
-                                        );
-                                        this.$store.commit("putWidgets", widgets);
-                                        this.$store.commit("putCloudScript", cloudscript);
-                                        */
+                                         */
                                     }
                                 }
                             })

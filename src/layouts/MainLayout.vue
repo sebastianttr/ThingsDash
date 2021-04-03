@@ -76,7 +76,7 @@
           <q-item-section avatar>
             <q-icon :name="editor.icon"/>
           </q-item-section>
-
+          <!---->
           <q-item-section>
             <q-item-label class="color:black">{{editor.label}}</q-item-label>
           </q-item-section>
