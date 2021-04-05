@@ -109,28 +109,6 @@ export default {
             if (response.data.userdata.singleURLFetch == true) {
               this.$store.commit("putWidgets", response.data.widgets);
               this.$store.commit("putCloudScript", response.data.cloudscripts);
-              /*
-              this.$store.commit(
-                "putSingleURLState",
-                response.data.userdata.singleURLFetch
-              );
-              this.$store.commit(
-                "putSingleURL",
-                response.data.userdata.urls.widgetsURL
-              );
-              this.$store.commit(
-                "putChangeSingleURLStateURL",
-                response.data.userdata.urls.singleURLChange
-              );
-              this.$store.commit(
-                "putWidgetsURL",
-                response.data.userdata.urls.widgetsURL
-              );
-              this.$store.commit(
-                "putCloudscriptURL",
-                response.data.userdata.urls.cloudscriptURL
-              );
-              */
             } else {
               let widgets = this.getfromBroker(
                 response.data.userdata.urls.widgetsURL +
@@ -159,8 +137,6 @@ export default {
           console.log(e);
           this.loginError = true;
         });
-
-      //http://iotdev.htlwy.ac.at/thing/iotusecases2020/widgets?keytoken=keytatar:iotusecases
     },
     getfromBroker(url) {
       axios.get(url).then(response => {

@@ -127,7 +127,7 @@
       <q-card style="width: 350px">
         <div class="row items-center no-wrap q-pa-sm">
           <q-btn rounded color="primary" v-close-popup>Close</q-btn>
-          <div class="center q-ma-md" style="font-size:24px;">Element Box</div>
+          <div class="center q-ma-md" style="font-size:24px;">Edit widget</div>
         </div>
         <q-separator/>
         <q-scroll-area class="items-center" :thumbStyle="thumbStyle" style="height: 80vh;">
@@ -472,6 +472,7 @@ export default {
     },
     upload() {
       var uploadFormat = { title: this.thingName, widgets: this.elements };
+      console.log(JSON.stringify(this.elements));
       return httpPOST(
         "https://iotdev.htlwy.ac.at/thing/iotusecases2020/updateWidget?keytoken=" +
           this.$store.state.username +

@@ -95,7 +95,7 @@ export default function( /* { ssrContext } */ ) {
                         if (response.data != "done") {
                             if (response.data.userdata.singleURLFetch == true) {
                                 commit("putWidgets", response.data.widgets);
-                                commit("putCloudScript", response.data.cloudscripts);
+                                //commit("putCloudScript", response.data.cloudscripts);
                                 commit("putUserLoggedIn", true);
                             } else {
                                 /*
@@ -133,7 +133,7 @@ export default function( /* { ssrContext } */ ) {
                                 if (response.data != "done") {
                                     if (response.data.userdata.singleURLFetch == true) {
                                         commit("putWidgets", response.data.widgets);
-                                        commit("putCloudScript", response.data.cloudscripts);
+                                        //commit("putCloudScript", response.data.cloudscripts);
                                         commit("putUserLoggedIn", true);
                                     } else {
                                         /*
