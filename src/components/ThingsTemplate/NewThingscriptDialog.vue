@@ -2,9 +2,9 @@
   <div :style="'box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5); border-radius: 15px;'" class="q-mb-md">
     <q-card>
       <q-card-section>
-        <div class="text-h5 text-black q-ma-sm">Add new Thing</div>
+        <div class="text-h5 text-black q-ma-sm">Create new Thingscript</div>
 
-        <div class="text-h7 text-black q-ma-sm">Enter Title:</div>
+        <div class="text-h7 text-black q-ma-sm">Enter Name of Script:</div>
         <q-input
           class="q-ma-sm"
           outlined
@@ -59,18 +59,10 @@ export default {
       group: "premade",
       options: [
         {
-          label: "Use premade",
-          sublable:
-            "The app will decide how the UI will look based on the selection and IO.",
+          label: "Instruction List",
+          sublable: "Instruction List implementation for microcontrollers.",
           value: "premade",
           key: 1
-        },
-        {
-          label: "Create new GUI",
-          sublable:
-            "You can create your own GUI in an Editor, while will be saved on your account.",
-          value: "true",
-          key: 2
         }
       ]
     };
@@ -82,7 +74,6 @@ export default {
       console.log("Hello World!");
     },
     loadGUIEditor() {
-      this.$store.dispatch("update");
       this.onDone({ name: this.thingTitle });
     }
   },

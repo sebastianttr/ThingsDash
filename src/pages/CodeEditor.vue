@@ -3,8 +3,8 @@
     <q-page class="q-ma-xs" key="1">
       <q-item class="q-ml-sm">
         <q-item-section>
-          <div class="text-h5">{{title}}</div>
-          <sub>{{url + "/" + this.name}}</sub>
+          <div class="text-h5">Code Editor</div>
+          <sub>{{this.name}}</sub>
         </q-item-section>
         <q-item-section side top>
           <q-btn round color="black" icon="open_in_browser" @click="uploadScript()">
@@ -87,6 +87,7 @@ export default {
       users: this.$route.params.users,
       language: this.$route.params.language,
       url: this.$route.params.url,
+      scriptMode: this.$route.params.scriptMode,
       customeditor: false,
       scriptEditor: 'console.log("Hello World!")',
       currentScript: "",
@@ -132,41 +133,70 @@ export default {
     getAndSetupEditor() {
       this.getFail = false;
       var script = "";
-      axios
-        .get(this.url + '/get?name="' + this.name + '"')
-        .then(res => {
-          script = res.data;
-          var v = this;
-          v.currentScript = res.data;
-          require(["monaco-editor/esm/vs/editor/editor.main.js"], function() {
-            monaco.languages.registerCompletionItemProvider(v.language, {
-              provideCompletionItems: () => {
-                return { suggestions: v.createDependencyProposals() };
-              }
-            });
-            monaco.languages.register({
-              id: "python",
-              extensions: [".py"],
-              aliases: ["python"],
-              mimetypes: ["application/text"]
-            });
-            var editor = monaco.editor.create(
-              document.getElementById("container"),
-              {
-                theme: "vs-dark",
-                value: v.currentScript,
-                language: v.language
-              }
-            );
-            editor.onDidChangeModelContent(function(e) {
-              v.onChange(editor.getValue());
-            });
+      var v = this;
+      if (this.scriptMode == "thingscript") {
+        console.log("Mode is thingscript");
+        require(["monaco-editor/esm/vs/editor/editor.main.js"], function() {
+          monaco.languages.registerCompletionItemProvider(v.language, {
+            provideCompletionItems: () => {
+              return { suggestions: v.createDependencyProposals() };
+            }
           });
-        })
-        .catch(err => {
-          console.log(err);
-          this.getFail = true;
+          monaco.languages.register({
+            id: "python",
+            extensions: [".py"],
+            aliases: ["python"],
+            mimetypes: ["application/text"]
+          });
+          var editor = monaco.editor.create(
+            document.getElementById("container"),
+            {
+              theme: "vs-dark",
+              value: 'console.log("Hello World!");',
+              language: v.language
+            }
+          );
+          editor.onDidChangeModelContent(function(e) {
+            v.onChange(editor.getValue());
+          });
         });
+      } else if (this.scriptMode == "cloudscript") {
+        axios
+          .get(this.url + '/get?name="' + this.name + '"')
+          .then(res => {
+            script = res.data;
+            var v = this;
+            v.currentScript = res.data;
+            require(["monaco-editor/esm/vs/editor/editor.main.js"], function() {
+              monaco.languages.registerCompletionItemProvider(v.language, {
+                provideCompletionItems: () => {
+                  return { suggestions: v.createDependencyProposals() };
+                }
+              });
+              monaco.languages.register({
+                id: "python",
+                extensions: [".py"],
+                aliases: ["python"],
+                mimetypes: ["application/text"]
+              });
+              var editor = monaco.editor.create(
+                document.getElementById("container"),
+                {
+                  theme: "vs-dark",
+                  value: v.currentScript,
+                  language: v.language
+                }
+              );
+              editor.onDidChangeModelContent(function(e) {
+                v.onChange(editor.getValue());
+              });
+            });
+          })
+          .catch(err => {
+            console.log(err);
+            this.getFail = true;
+          });
+      }
     }
   },
   computed: {},

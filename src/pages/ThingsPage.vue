@@ -19,6 +19,27 @@
         ></thingscard>
       </div>
     </transition>
+    <q-dialog v-model="guiPopupDialog" transition-show="jump-up" transition-hide="jump-down">
+      <thingsscriptDialog :onDone="loadThingscriptEditor"></thingsscriptDialog>
+    </q-dialog>
+
+    <q-dialog v-model="loadingCodeEditor" seamless position="bottom">
+      <q-card style="width: 400px" class="bg-green-5">
+        <q-card-section class="row items-center no-wrap red">
+          <div>
+            <div class="text-weight-bold">Loading GUI- Editor</div>
+            <div class="text-grey-bold">Please Wait.</div>
+          </div>
+
+          <q-space/>
+          <q-spinner-rings style="height:50px;width:50px;" color="black"/>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn fab icon="add" color="primary" @click="guiPopupDialog = true"/>
+    </q-page-sticky>
   </q-page>
 </template>
 
@@ -57,13 +78,48 @@ export default {
           users: "Max Musterboi",
           script: "lorem epsum"
         }
-      ]
+      ],
+      loadingCodeEditor: false,
+      guiPopupDialog: false
     };
   },
   components: {
-    thingscard: require("components/ThingsTemplate/ThingsCard.vue").default
+    thingscard: require("components/ThingsTemplate/ThingsCard.vue").default,
+    thingsscriptDialog: require("components/ThingsTemplate/NewThingscriptDialog.vue")
+      .default
   },
-  methods: {},
+  methods: {
+    loadThingscriptEditor(msg) {
+      console.log("Loading ThingscriptEditor");
+      this.loadingCodeEditor = true;
+      setTimeout(() => {
+        this.loadingCodeEditor = false;
+      }, 2000);
+      fetch(
+        "http://iotdev.htlwy.ac.at/thing/iotusecases2020/addThingsscript?keytoken=" +
+          this.$store.state.username +
+          ":" +
+          this.$store.state.password +
+          '&value="' +
+          msg.name +
+          '"',
+        { cache: "no-cache" }
+      ).then(data => {
+        //console.log(data);
+        this.$store.dispatch("update");
+        this.$router.push({
+          name: "code_editor",
+          params: {
+            title: msg.name,
+            description: "",
+            name: msg.name,
+            language: "javascript",
+            scriptMode: "thingscript"
+          }
+        });
+      });
+    }
+  },
   computed: {},
   beforeMount() {}
 };
