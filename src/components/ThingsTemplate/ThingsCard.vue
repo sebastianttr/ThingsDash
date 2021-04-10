@@ -1,61 +1,62 @@
 <template>
-  <div
-    style="box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5); border-radius: 15px; overflow:hidden;"
-    class="q-mb-md"
+  <transition
+    appear
+    leave
+    appear-class="animated fadeIn"
+    appear-to-class="animated fadeIn"
+    appear-active-class="animated fadeIn"
+    leave-class="animated fadeOut"
+    leave-to-class="animated fadeOut"
+    leave-active-class="animated fadeOut"
   >
-    <q-item style="height:auto; width:auto;">
+    <div
+      style="box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5); border-radius: 15px; overflow:hidden;"
+      class="q-mb-md"
+    >
+      <q-item style="height:auto; width:auto;">
+        <q-item-section>
+          <q-item-label class="q-ma-sm" style="font-size: 25px;">{{ this.$props.name }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section side top>
+          <q-btn
+            flat
+            round
+            color="black"
+            class="q-ma-xs"
+            icon="more_vert"
+            @click="menuOpen != menuOpen"
+          >
+            <q-menu v-model="menuOpen" transition-show="jump-down" transition-hide="jump-up">
+              <q-list style="min-width: 100px">
+                <q-item clickable @click="removeItem()">
+                  <q-item-section>Remove</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </q-item-section>
+      </q-item>
+      <q-separator style="color:black;height:2px;"/>
+
       <q-item-section>
-        <q-item-label class="q-ma-sm" style="font-size: 25px;">{{ this.$props.name }}</q-item-label>
+        <div class="q-mt-sm q-ml-sm q-mb-sm row">
+          <q-icon name="language" style="font-size: 1.5em;"/>
+          <div class="text-h7 q-ml-sm">Language:</div>
+          <div class="text-h7 q-ml-sm text-bold">{{this.$props.language}}</div>
+        </div>
       </q-item-section>
-
-      <q-item-section side top>
-        <q-btn
-          flat
-          round
-          color="black"
-          class="q-ma-xs"
-          icon="more_vert"
-          @click="menuOpen != menuOpen"
-        >
-          <q-menu v-model="menuOpen" transition-show="jump-down" transition-hide="jump-up">
-            <q-list style="min-width: 100px">
-              <q-item clickable @click="removeItem()">
-                <q-item-section>Remove</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
-      </q-item-section>
-    </q-item>
-    <q-separator style="color:black;height:2px;"/>
-
-    <q-dialog v-model="confirmationPopup" seamless position="bottom">
-      <q-card style="width: 350px; background-color:#00cc66;">
-        <q-card-section class="row items-center no-wrap">
-          <div>
-            <div class="text-weight">Deleted a script!</div>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-
-    <q-item-section>
-      <div class="q-mt-sm q-ml-sm q-mb-sm row">
-        <q-icon name="language" style="font-size: 1.5em;"/>
-        <div class="text-h7 q-ml-sm">Language:</div>
-        <div class="text-h7 q-ml-sm text-bold">{{this.$props.language}}</div>
-      </div>
-    </q-item-section>
-    <q-item-section>
-      <div class="q-mt-sm q-ml-sm q-mb-sm row">
-        <q-btn rounded color="primary" icon="code" label="Edit Code" v-on:click="toCodeEditor()"/>
-        <!--
+      <q-item-section>
+        <div class="q-mt-sm q-ml-sm q-mb-sm row">
+          <q-btn rounded color="primary" icon="code" label="Edit Code" v-on:click="toCodeEditor()"/>
+          <!--
             <q-btn rounded color="primary" class="q-ml-sm" icon="settings" label="Edit Thingscript"/>
-        -->
-      </div>
-    </q-item-section>
-    <q-item-section></q-item-section>
-  </div>
+          -->
+        </div>
+      </q-item-section>
+      <q-item-section></q-item-section>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -99,17 +100,13 @@ export default {
           mode: "no-cors"
         }
       ).then(() => {
+        this.deletepopup();
         this.$store.dispatch("update");
-        this.confirmationPopup = true;
-        this.menuOpen = false;
-        setTimeout(() => {
-          this.confirmationPopup = false;
-        }, 3000);
       });
     }
   },
   computed: {},
-  props: ["name", "language", "script"]
+  props: ["name", "language", "script", "deletepopup"]
 };
 </script>
 

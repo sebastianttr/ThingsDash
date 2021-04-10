@@ -1,10 +1,13 @@
 <template>
   <transition
     appear
+    leave
     appear-class="animated fadeIn"
     appear-to-class="animated fadeIn"
     appear-active-class="animated fadeIn"
     leave-class="animated fadeOut"
+    leave-to-class="animated fadeOut"
+    leave-active-class="animated fadeOut"
   >
     <div
       :style="'box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5); border-radius: 15px; overflow:hidden;'"

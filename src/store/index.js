@@ -91,7 +91,6 @@ export default function( /* { ssrContext } */ ) {
                 }
             },
             update({ commit, state }, payload) {
-
                 return axios
                     .get(
                         "https://iotdev.htlwy.ac.at/thing/iotusecases2020/userdata?keytoken=" +

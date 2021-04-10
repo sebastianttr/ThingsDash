@@ -7,13 +7,28 @@
           <sub>{{this.name}}</sub>
         </q-item-section>
         <q-item-section side top>
-          <q-btn round color="black" icon="open_in_browser" @click="uploadScript()">
+          <q-btn rounded color="black" icon="save" @click="saveScript()">
+            Save
+            <q-tooltip>Save</q-tooltip>
+          </q-btn>
+        </q-item-section>
+
+        <q-item-section side top>
+          <q-btn rounded color="black" icon="open_in_browser" @click="uploadScript()">
+            Upload
             <q-tooltip>Save & Upload</q-tooltip>
           </q-btn>
         </q-item-section>
         <q-item-section side top>
           <q-btn flat round color="black" icon="more_vert">
-            <q-tooltip>Edit Thing</q-tooltip>
+            <q-tooltip>Menu</q-tooltip>
+            <q-menu>
+              <q-list style="min-width: 100px">
+                <q-item clickable v-close-popup>
+                  <q-item-section v-on:click="applyAndLeaveEditor()">Apply & Leave Editor</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
           </q-btn>
         </q-item-section>
       </q-item>
@@ -94,27 +109,17 @@ export default {
   components: {},
   methods: {
     onChange(value) {
-      this.currentScript = value;
+      this.script = value;
     },
-    uploadScript() {
-      axios
-        .post(this.url + '/upload?name="' + this.name + '"', this.currentScript)
-        .then(res => {
-          console.log("Succesfully Uploaded Script!");
-          this.uploadFail = false;
-          this.uploadSuccess = true;
-          setTimeout(() => {
-            this.uploadSuccess = false;
-          }, 3000);
-        })
-        .catch(e => {
-          console.log("Error Uploading Code!");
-          this.uploadFail = true;
-        });
+    saveScript() {},
+    uploadScript() {},
+    applyAndLeaveEditor() {
+      this.saveScript();
+      this.$router.push({
+        name: "things"
+      });
     },
     createDependencyProposals() {
-      // returning a static list of proposals, not even looking at the prefix (filtering is done by the Monaco editor),
-      // here you could do a server side lookup
       return [
         {
           label: "DEF_PORT",
@@ -128,7 +133,6 @@ export default {
       this.getFail = false;
       var script = "";
       var v = this;
-      console.log(v.$route.params);
       if (v.language == "thingscript") {
         require(["monaco-editor/esm/vs/editor/editor.main.js"], function() {
           monaco.languages.registerCompletionItemProvider(v.language, {

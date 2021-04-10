@@ -23,7 +23,7 @@
         </q-item-section>
         <q-item-section side top>
           <q-btn flat round color="black" icon="more_vert">
-            <q-tooltip>Edit Thing</q-tooltip>
+            <q-tooltip>Menu</q-tooltip>
             <q-menu>
               <q-list style="min-width: 100px">
                 <q-item clickable v-close-popup>

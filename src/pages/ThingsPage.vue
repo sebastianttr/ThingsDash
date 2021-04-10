@@ -1,23 +1,16 @@
 <template>
   <q-page class="q-ma-md">
-    <transition
-      appear
-      appear-class="animated fadeIn"
-      appear-to-class="animated fadeIn"
-      appear-active-class="animated fadeIn"
-      :duration="5000"
-    >
-      <div>
-        <thingscard
-          v-for="(element,keys) in elements"
-          :key="keys+1"
-          :name="element.name"
-          :language="element.language"
-          :script="element.script"
-          class="q-ma-xs"
-        ></thingscard>
-      </div>
-    </transition>
+    <div>
+      <thingscard
+        v-for="(element,keys) in elements"
+        :key="keys+1"
+        :name="element.name"
+        :language="element.language"
+        :script="element.script"
+        :deletepopup="showDeletePopupDialog"
+        class="q-ma-xs"
+      ></thingscard>
+    </div>
     <q-dialog v-model="guiPopupDialog" transition-show="jump-up" transition-hide="jump-down">
       <thingsscriptDialog :onDone="loadThingscriptEditor"></thingsscriptDialog>
     </q-dialog>
@@ -26,12 +19,22 @@
       <q-card style="width: 400px" class="bg-green-5">
         <q-card-section class="row items-center no-wrap red">
           <div>
-            <div class="text-weight-bold">Loading GUI- Editor</div>
+            <div class="text-weight-bold">Loading Code- Editor</div>
             <div class="text-grey-bold">Please Wait.</div>
           </div>
 
           <q-space/>
           <q-spinner-rings style="height:50px;width:50px;" color="black"/>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="deletePopupDialog" seamless position="bottom">
+      <q-card style="width: 350px; background-color:#00cc66;">
+        <q-card-section class="row items-center no-wrap">
+          <div>
+            <div class="text-weight">Deleted a script!</div>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -52,7 +55,7 @@ export default {
     return {
       animationStart: false,
       isLoggedIn: true,
-      elements: this.$store.state.thingscripts,
+      deletePopupDialog: false,
       loadingCodeEditor: false,
       guiPopupDialog: false
     };
@@ -63,8 +66,11 @@ export default {
       .default
   },
   methods: {
+    showDeletePopupDialog() {
+      this.deletePopupDialog = true;
+      setTimeout(() => (this.deletePopupDialog = false), 3000);
+    },
     loadThingscriptEditor(msg) {
-      console.log("Loading ThingscriptEditor");
       this.loadingCodeEditor = true;
       setTimeout(() => {
         this.loadingCodeEditor = false;
@@ -83,7 +89,6 @@ export default {
           "",
         { cache: "no-cache" }
       ).then(data => {
-        console.log(data);
         this.$store.dispatch("update");
         this.$router.push({
           name: "code_editor",
@@ -96,7 +101,11 @@ export default {
       });
     }
   },
-  computed: {},
+  computed: {
+    elements() {
+      return this.$store.state.thingscripts;
+    }
+  },
   beforeMount() {}
 };
 </script>
