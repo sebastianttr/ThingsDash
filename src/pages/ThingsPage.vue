@@ -11,10 +11,9 @@
         <thingscard
           v-for="(element,keys) in elements"
           :key="keys+1"
-          :title="element.title"
-          :description="element.description"
+          :name="element.name"
           :language="element.language"
-          :users="element.users"
+          :script="element.script"
           class="q-ma-xs"
         ></thingscard>
       </div>
@@ -53,32 +52,7 @@ export default {
     return {
       animationStart: false,
       isLoggedIn: true,
-      elements: [
-        {
-          title: "Thingscript 1 - Sensor Node Test",
-          description: "A IL- Script for development purposes",
-          language: "Instruction List",
-          status: "Unknown",
-          users: "Sebastian Tatar",
-          script: "lorem epsum"
-        },
-        {
-          title: "Thingscript 2 - Power Measuerment",
-          description: "Thingscript 2 - for some other things. ",
-          language: "MicroPython",
-          status: "Unknown",
-          users: "Max Musterboi",
-          script: "lorem epsum"
-        },
-        {
-          title: "Thingsscript 3 ",
-          description: "Thingsscript 3",
-          language: "Instruction List",
-          status: "Unknown",
-          users: "Max Musterboi",
-          script: "lorem epsum"
-        }
-      ],
+      elements: this.$store.state.thingscripts,
       loadingCodeEditor: false,
       guiPopupDialog: false
     };
@@ -100,21 +74,23 @@ export default {
           this.$store.state.username +
           ":" +
           this.$store.state.password +
-          '&value="' +
-          msg.name +
-          '"',
+          "&value=" +
+          JSON.stringify({
+            name: msg.name,
+            language: msg.language,
+            script: "INIT:\nLD 10\nST a\n\nLOOP:\n"
+          }) +
+          "",
         { cache: "no-cache" }
       ).then(data => {
-        //console.log(data);
+        console.log(data);
         this.$store.dispatch("update");
         this.$router.push({
           name: "code_editor",
           params: {
-            title: msg.name,
-            description: "",
             name: msg.name,
-            language: "javascript",
-            scriptMode: "thingscript"
+            language: "thingscript",
+            script: "INIT:\nLD 10\nST a\n\nLOOP:\n"
           }
         });
       });

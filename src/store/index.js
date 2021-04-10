@@ -22,6 +22,7 @@ export default function( /* { ssrContext } */ ) {
             username: null,
             password: null,
             widgets: null,
+            thingscripts: null,
             userLoggedIn: null,
             singleURLState: null,
         },
@@ -34,6 +35,9 @@ export default function( /* { ssrContext } */ ) {
             },
             putWidgets(state, payload) {
                 state.widgets = payload;
+            },
+            putThingscripts(state, payload) {
+                state.thingscripts = payload;
             },
             putUserLoggedIn(state, payload) {
                 state.userLoggedIn = payload;
@@ -67,6 +71,9 @@ export default function( /* { ssrContext } */ ) {
             widgets(state) {
                 return state.widgets;
             },
+            thingscripts(state) {
+                return state.thingscripts;
+            },
             userLoggedIn(state) {
                 return state.userLoggedIn;
             },
@@ -95,7 +102,7 @@ export default function( /* { ssrContext } */ ) {
                         if (response.data != "done") {
                             if (response.data.userdata.singleURLFetch == true) {
                                 commit("putWidgets", response.data.widgets);
-                                //commit("putCloudScript", response.data.cloudscripts);
+                                commit("putThingscripts", response.data.thingscripts);
                                 commit("putUserLoggedIn", true);
                             } else {
                                 /*
@@ -133,7 +140,7 @@ export default function( /* { ssrContext } */ ) {
                                 if (response.data != "done") {
                                     if (response.data.userdata.singleURLFetch == true) {
                                         commit("putWidgets", response.data.widgets);
-                                        //commit("putCloudScript", response.data.cloudscripts);
+                                        commit("putThingscripts", response.data.thingscripts);
                                         commit("putUserLoggedIn", true);
                                     } else {
                                         /*

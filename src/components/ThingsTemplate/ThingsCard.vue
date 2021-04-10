@@ -5,7 +5,7 @@
   >
     <q-item style="height:auto; width:auto;">
       <q-item-section>
-        <q-item-label class="q-ma-sm" style="font-size: 25px;">{{ this.$props.title }}</q-item-label>
+        <q-item-label class="q-ma-sm" style="font-size: 25px;">{{ this.$props.name }}</q-item-label>
       </q-item-section>
 
       <q-item-section side top>
@@ -15,15 +15,12 @@
           color="black"
           class="q-ma-xs"
           icon="more_vert"
-          @click="menuOpen!=menuOpen"
+          @click="menuOpen != menuOpen"
         >
           <q-menu v-model="menuOpen" transition-show="jump-down" transition-hide="jump-up">
             <q-list style="min-width: 100px">
-              <q-item clickable>
-                <q-item-section>Edit</q-item-section>
-              </q-item>
               <q-item clickable @click="removeItem()">
-                <q-item-section>Delete</q-item-section>
+                <q-item-section>Remove</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -42,41 +39,22 @@
       </q-card>
     </q-dialog>
 
-    <q-expansion-item
-      expand-separator
-      icon="description"
-      :label="this.$props.description"
-      :caption="'by ' + this.$props.users"
-    >
-      <q-item-section>
-        <div class="q-mt-md q-ml-md q-mb-sm row">
-          <q-icon name="network_check" style="font-size: 1.5em;"/>
-          <div class="text-h7 q-ml-sm">Current Status:</div>
-          <div class="text-h7 q-ml-sm text-grey">Status unknown.</div>
-        </div>
-      </q-item-section>
-      <q-item-section>
-        <div class="q-mt-sm q-ml-sm q-mb-sm row">
-          <q-icon name="people" style="font-size: 1.5em;"/>
-          <div class="text-h7 q-ml-sm">Users:</div>
-          <div class="text-h7 q-ml-sm text-bold">{{this.$props.users}}</div>
-        </div>
-      </q-item-section>
-      <q-item-section>
-        <div class="q-mt-sm q-ml-sm q-mb-sm row">
-          <q-icon name="language" style="font-size: 1.5em;"/>
-          <div class="text-h7 q-ml-sm">Language:</div>
-          <div class="text-h7 q-ml-sm text-bold">{{this.$props.language}}</div>
-        </div>
-      </q-item-section>
-      <q-item-section>
-        <div class="q-mt-sm q-ml-sm q-mb-sm row">
-          <q-btn rounded color="primary" icon="code" label="Edit Code" v-on:click="toCodeEditor()"/>
-          <q-btn rounded color="primary" class="q-ml-sm" icon="settings" label="Edit Thingscript"/>
-        </div>
-      </q-item-section>
-      <q-item-section></q-item-section>
-    </q-expansion-item>
+    <q-item-section>
+      <div class="q-mt-sm q-ml-sm q-mb-sm row">
+        <q-icon name="language" style="font-size: 1.5em;"/>
+        <div class="text-h7 q-ml-sm">Language:</div>
+        <div class="text-h7 q-ml-sm text-bold">{{this.$props.language}}</div>
+      </div>
+    </q-item-section>
+    <q-item-section>
+      <div class="q-mt-sm q-ml-sm q-mb-sm row">
+        <q-btn rounded color="primary" icon="code" label="Edit Code" v-on:click="toCodeEditor()"/>
+        <!--
+            <q-btn rounded color="primary" class="q-ml-sm" icon="settings" label="Edit Thingscript"/>
+        -->
+      </div>
+    </q-item-section>
+    <q-item-section></q-item-section>
   </div>
 </template>
 
@@ -102,20 +80,26 @@ export default {
       this.$router.push({
         name: "code_editor",
         params: {
-          title: this.$props.title,
-          description: this.$props.description,
           name: this.$props.name,
-          users: this.$props.users,
           language: this.$props.language,
-          url: this.$props.url
+          script: this.$props.script
         }
       });
     },
     removeItem() {
-      fetch(this.url + '/delete?name="' + this.name + '"', {
-        mode: "no-cors"
-      }).then(() => {
-        this.$store.dispatch("updateStore");
+      fetch(
+        "http://iotdev.htlwy.ac.at/thing/iotusecases2020/removeThingsscript?keytoken=" +
+          this.$store.state.username +
+          ":" +
+          this.$store.state.password +
+          '&value="' +
+          this.$props.name +
+          '"',
+        {
+          mode: "no-cors"
+        }
+      ).then(() => {
+        this.$store.dispatch("update");
         this.confirmationPopup = true;
         this.menuOpen = false;
         setTimeout(() => {
@@ -125,7 +109,7 @@ export default {
     }
   },
   computed: {},
-  props: ["title", "description", "language", "users", "url", "name"]
+  props: ["name", "language", "script"]
 };
 </script>
 

@@ -81,16 +81,10 @@ export default {
   name: "code_editor",
   data() {
     return {
-      title: this.$route.params.title,
-      description: this.$route.params.description,
       name: this.$route.params.name,
-      users: this.$route.params.users,
       language: this.$route.params.language,
-      url: this.$route.params.url,
-      scriptMode: this.$route.params.scriptMode,
+      script: this.$route.params.script,
       customeditor: false,
-      scriptEditor: 'console.log("Hello World!")',
-      currentScript: "",
       uploadSuccess: false,
       uploadFail: false,
       getFail: false,
@@ -134,8 +128,8 @@ export default {
       this.getFail = false;
       var script = "";
       var v = this;
-      if (this.scriptMode == "thingscript") {
-        console.log("Mode is thingscript");
+      console.log(v.$route.params);
+      if (v.language == "thingscript") {
         require(["monaco-editor/esm/vs/editor/editor.main.js"], function() {
           monaco.languages.registerCompletionItemProvider(v.language, {
             provideCompletionItems: () => {
@@ -152,7 +146,7 @@ export default {
             document.getElementById("container"),
             {
               theme: "vs-dark",
-              value: 'console.log("Hello World!");',
+              value: v.script,
               language: v.language
             }
           );
@@ -160,7 +154,7 @@ export default {
             v.onChange(editor.getValue());
           });
         });
-      } else if (this.scriptMode == "cloudscript") {
+      } else if (this.language == "cloudscript") {
         axios
           .get(this.url + '/get?name="' + this.name + '"')
           .then(res => {
@@ -202,11 +196,6 @@ export default {
   computed: {},
   mounted() {
     this.getAndSetupEditor();
-  },
-  beforeMount() {
-    if (this.title == undefined || this.title == null) {
-      this.$router.push("cloud_script");
-    }
   }
 };
 </script>

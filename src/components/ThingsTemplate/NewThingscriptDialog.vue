@@ -74,7 +74,7 @@ export default {
       console.log("Hello World!");
     },
     loadGUIEditor() {
-      this.onDone({ name: this.thingTitle });
+      this.onDone({ name: this.thingTitle, language: "thingscript" });
     }
   },
   computed: {},
