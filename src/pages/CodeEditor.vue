@@ -110,6 +110,7 @@ import "monaco-editor/esm/vs/editor/contrib/find/findController.js";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution.js";
 import { setTimeout } from "timers";
+import EILConverter from "../libraries/EILConverter.js";
 
 export default {
   name: "code_editor",
@@ -151,7 +152,9 @@ export default {
         this.$store.dispatch("update");
       });
     },
-    uploadScript() {},
+    uploadScript() {
+      new EILConverter().convertScriptToEIL(this.script);
+    },
     applyAndLeaveEditor() {
       this.saveScript();
       this.$router.push({
@@ -168,29 +171,79 @@ export default {
         }
       ];
     },
+    configureEILCompletion(monaco) {
+      monaco.languages.register({ id: "instructionlist" });
+      var themeToken = [];
+      themeToken.push([/\/\/.*/, "comment"]);
+      themeToken.push([/\".*\"/, "string"]);
+      new EILConverter().variables.forEach((items, index) => {
+        themeToken.push([items, "constant"]);
+      });
+      new EILConverter().operatorsNames.forEach((items, index) => {
+        themeToken.push([items, "keyword"]);
+      });
+
+      monaco.languages.setMonarchTokensProvider("instructionlist", {
+        tokenizer: {
+          root: themeToken
+        }
+      });
+
+      monaco.languages.registerCompletionItemProvider("instructionlist", {
+        provideCompletionItems: () => {
+          var suggestions = [];
+          new EILConverter().variables.forEach((items, index) => {
+            suggestions.push({
+              label: items,
+              kind: monaco.languages.CompletionItemKind.Variable,
+              insertText: items
+            });
+          });
+          new EILConverter().operatorsNamesCompletion.forEach(
+            (items, index) => {
+              suggestions.push({
+                label: new EILConverter().operatorsNames[index],
+                kind: monaco.languages.CompletionItemKind.Method,
+                insertText: items
+              });
+            }
+          );
+
+          return { suggestions: suggestions };
+        }
+      });
+    },
     getAndSetupEditor() {
       this.getFail = false;
       var script = "";
       var v = this;
-      if (v.language == "thingscript") {
+      if (v.language == "EIL") {
+        document.getElementById("container").innerHTML = "";
         require(["monaco-editor/esm/vs/editor/editor.main.js"], function() {
+          v.configureEILCompletion(monaco);
           monaco.languages.registerCompletionItemProvider(v.language, {
             provideCompletionItems: () => {
               return { suggestions: v.createDependencyProposals() };
             }
           });
-          monaco.languages.register({
-            id: "python",
-            extensions: [".py"],
-            aliases: ["python"],
-            mimetypes: ["application/text"]
+
+          monaco.editor.defineTheme("instructionlistTheme", {
+            base: "vs-dark", // can also be vs-dark or hc-black
+            inherit: true,
+            rules: [
+              { token: "keyword", foreground: "d67b1a" },
+              { token: "string", foreground: "437a3b" },
+              { token: "constant", foreground: "36f78a" },
+              { token: "number", foreground: "36f78a" }
+            ]
           });
+
           var editor = monaco.editor.create(
             document.getElementById("container"),
             {
-              theme: "vs-dark",
+              theme: "instructionlistTheme",
               value: v.script,
-              language: v.language
+              language: "instructionlist"
             }
           );
           editor.onDidChangeModelContent(function(e) {

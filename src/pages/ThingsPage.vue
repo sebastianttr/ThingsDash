@@ -94,7 +94,7 @@ export default {
           name: "code_editor",
           params: {
             name: msg.name,
-            language: "thingscript",
+            language: "EIL",
             script: "INIT:\nLD 10\nST a\n\nLOOP:\n"
           }
         });
