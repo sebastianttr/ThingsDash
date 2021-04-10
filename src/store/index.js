@@ -62,7 +62,6 @@ export default function( /* { ssrContext } */ ) {
                 return state.lastname;
             },
             username(state) {
-                console.log(state.username);
                 return state.username;
             },
             password(state) {

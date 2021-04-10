@@ -1,5 +1,14 @@
 <template>
-  <transition-group name="list">
+  <transition-group
+    appear
+    appear-class="animated fadeIn"
+    appear-to-class="animated fadeIn"
+    appear-active-class="animated fadeIn"
+    leave-to
+    leave-class="animated fadeOut"
+    leave-to-class="animated fadeOut"
+    leave-active-class="animated fadeOut"
+  >
     <q-page class="q-ma-xs" key="1">
       <q-item class="q-ml-sm">
         <q-item-section>
@@ -78,6 +87,15 @@
           </q-card-section>
         </q-card>
       </q-dialog>
+      <q-dialog v-model="saveScriptDialog" seamless position="bottom">
+        <q-card style="width: 350px; background-color:#00cc66;">
+          <q-card-section class="row items-center no-wrap">
+            <div>
+              <div class="text-weight">Saved script!</div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </q-page>
   </transition-group>
 </template> 
@@ -91,6 +109,7 @@ import "monaco-editor/esm/vs/editor/browser/controller/coreCommands.js";
 import "monaco-editor/esm/vs/editor/contrib/find/findController.js";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution.js";
+import { setTimeout } from "timers";
 
 export default {
   name: "code_editor",
@@ -103,6 +122,7 @@ export default {
       uploadSuccess: false,
       uploadFail: false,
       getFail: false,
+      saveScriptDialog: false,
       options: {}
     };
   },
@@ -111,7 +131,26 @@ export default {
     onChange(value) {
       this.script = value;
     },
-    saveScript() {},
+    saveScript() {
+      this.saveScriptDialog = true;
+      setTimeout(() => (this.saveScriptDialog = false), 2000);
+      fetch(
+        "http://iotdev.htlwy.ac.at/thing/iotusecases2020/updateThingsscript?keytoken=" +
+          this.$store.state.username +
+          ":" +
+          this.$store.state.password +
+          "&value=" +
+          JSON.stringify({
+            name: this.name,
+            language: this.language,
+            script: this.script
+          }) +
+          "",
+        { cache: "no-cache" }
+      ).then(data => {
+        this.$store.dispatch("update");
+      });
+    },
     uploadScript() {},
     applyAndLeaveEditor() {
       this.saveScript();
