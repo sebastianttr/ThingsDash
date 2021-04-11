@@ -176,6 +176,9 @@ export default {
       var themeToken = [];
       themeToken.push([/\/\/.*/, "comment"]);
       themeToken.push([/\".*\"/, "string"]);
+      themeToken.push([/.*\:/, "markers"]);
+      themeToken.push([/[0-9]/, "numbers"]);
+      themeToken.push([/[+-]?([0-9]*[.])?[0-9]+/, "floating"]);
       new EILConverter().variables.forEach((items, index) => {
         themeToken.push([items, "constant"]);
       });
@@ -204,10 +207,24 @@ export default {
               suggestions.push({
                 label: new EILConverter().operatorsNames[index],
                 kind: monaco.languages.CompletionItemKind.Method,
-                insertText: items
+                insertText: items,
+                insertTextRules:
+                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
               });
             }
           );
+
+          suggestions.push({
+            label: "TRUE",
+            kind: monaco.languages.CompletionItemKind.Variable,
+            insertText: "TRUE"
+          });
+
+          suggestions.push({
+            label: "FALSE",
+            kind: monaco.languages.CompletionItemKind.Variable,
+            insertText: "FALSE"
+          });
 
           return { suggestions: suggestions };
         }
@@ -234,7 +251,9 @@ export default {
               { token: "keyword", foreground: "d67b1a" },
               { token: "string", foreground: "437a3b" },
               { token: "constant", foreground: "36f78a" },
-              { token: "number", foreground: "36f78a" }
+              { token: "numbers", foreground: "8be9fd" },
+              { token: "floating", foreground: "8be9fd" },
+              { token: "markers", foreground: "bd93f9" }
             ]
           });
 
