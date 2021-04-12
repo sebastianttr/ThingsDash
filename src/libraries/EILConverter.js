@@ -20,7 +20,7 @@ export default class {
         'A2', 'A3', 'A4', 'A5', 'A9'
     ];
 
-    variables = ['%IO26', '%IO27', '%IO25', '%IADC0', '%TEMP', '%PRES', '%AX', '%AY', '%AZ', '%TOFM', '%TOFCM', '%TOFMM'];
+    variables = ['%IO26', '&IO27', '%IO25', '%IADC0', '%TEMP', '%PRES', '%AX', '%AY', '%AZ', '%TOFM', '%TOFCM', '%TOFMM'];
 
     getSplitedArray(script) {
         var stringNLReplace = script.replaceAll("\n", ";");
@@ -69,7 +69,7 @@ export default class {
 
         for (var i = loopMarkerPos + 1; i < splited.length; i++) {
             var item = splited[i];
-            if (item == "!ENDINIT") {
+            if (item == "!ENDLOOP") {
                 break;
             } else loopScript.push(item);
         }

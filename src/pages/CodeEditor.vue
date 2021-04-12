@@ -133,6 +133,7 @@ export default {
       this.script = value;
     },
     saveScript() {
+      console.log(this.script);
       this.saveScriptDialog = true;
       setTimeout(() => (this.saveScriptDialog = false), 2000);
       fetch(
@@ -149,6 +150,7 @@ export default {
           "",
         { cache: "no-cache" }
       ).then(data => {
+        console.log(data);
         this.$store.dispatch("update");
       });
     },
