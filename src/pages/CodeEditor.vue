@@ -176,7 +176,8 @@ export default {
       var themeToken = [];
       themeToken.push([/\/\/.*/, "comment"]);
       themeToken.push([/\".*\"/, "string"]);
-      themeToken.push([/.*\:/, "markers"]);
+      themeToken.push([/[A-Z]+\:/, "markers"]);
+      themeToken.push([/\!.*/, "endOFFunc"]);
       themeToken.push([/[0-9]/, "numbers"]);
       themeToken.push([/[+-]?([0-9]*[.])?[0-9]+/, "floating"]);
       new EILConverter().variables.forEach((items, index) => {
@@ -253,7 +254,8 @@ export default {
               { token: "constant", foreground: "36f78a" },
               { token: "numbers", foreground: "8be9fd" },
               { token: "floating", foreground: "8be9fd" },
-              { token: "markers", foreground: "bd93f9" }
+              { token: "markers", foreground: "bd93f9" },
+              { token: "endOFFunc", foreground: "bd93f9" }
             ]
           });
 
