@@ -141,14 +141,15 @@ export default {
           this.$store.state.username +
           ":" +
           this.$store.state.password +
-          "&value=" +
-          JSON.stringify({
-            name: this.name,
-            language: this.language,
-            script: this.script
-          }) +
-          "",
-        { cache: "no-cache" }
+          {
+            cache: "no-store",
+            method: "post",
+            body: JSON.stringify({
+              name: this.name,
+              language: this.language,
+              script: this.script
+            })
+          }
       ).then(data => {
         console.log(data);
         this.$store.dispatch("update");
