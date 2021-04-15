@@ -77,20 +77,59 @@ export default class {
     }
 
     getScriptFromMarker(script, marker) {
-        console.log(marker)
         var start = this.getMarkerPosition(script, marker) + 1;
         var end = this.getMarkerPosition(script, "!" + marker)
         var splited = this.getSplitedArray(script);
-        console.log(JSON.stringify(splited))
         return splited.slice(start, end);
     }
 
     composeInitEIL(script) {
-        var splited = this.getSplitedArray(script);
         var jumpBackIndices = [];
         var initMarkerPos = this.getMarkerPosition(script, "INIT");
 
-        this.getInit(script);
+        var splited = this.getInit(script);
+
+        let stringComposed = "";
+        for (var i = 0; i < splited.length; i++) {
+            var [operator, operand] = "";
+            var item = splited[i].toString();
+
+            if (item.match(/.*\:/) || item.match(/\!.*/))
+                continue;
+            else if (item.includes("(") || item.includes(")")) {
+                operator = item.replace(" ", "").replace("(", "E");
+                operator = (operator == ")") ? "Expression End" : operator;
+                operand = "()";
+            } else if (item.includes("JMP") || item.includes("JMPC") || item.includes("JMPCN")) {
+                operator = item.substring(0, item.indexOf(" "));
+                operand = splited.length;
+                jumpBackIndices.push(i + 2);
+                var op = this.getScriptFromMarker(script, this.getOperand(item))
+                op.push("RET");
+                splited.push(...op);
+            } else if (item.includes("RET")) {
+                operator = "JMP";
+                operand = jumpBackIndices.pop()
+            } else {
+
+                operator = item.toString().substr(0, item.indexOf(" "));
+                operand = item.toString().substr(item.indexOf(" ") + 1, item.length);
+            }
+
+            stringComposed = stringComposed +
+                this.operatorsCodes[this.operatorsNames.indexOf(operator)] +
+                operand +
+                ";";
+        }
+
+        return stringComposed
+    }
+
+    composeLoopEIL(script) {
+        var jumpBackIndices = [];
+
+        var initMarkerPos = this.getMarkerPosition(script, "LOOP");
+        var splited = this.getLoop(script);
 
         let stringComposed = "";
         for (var i = initMarkerPos; i < splited.length; i++) {
@@ -105,10 +144,10 @@ export default class {
                 operand = "()";
             } else if (item.includes("JMP") || item.includes("JMPC") || item.includes("JMPCN")) {
                 operator = item.substring(0, item.indexOf(" "));
-                operand = splited.length + 1;
-                jumpBackIndices.push(this.getMarkerPosition(script, this.getOperand(item)));
+                operand = splited.length;
+                jumpBackIndices.push(this.getMarkerPosition(script, this.getOperand(item)) + 1);
                 var v = this.getOperand(item)
-                splited.push(this.getScriptFromMarker(script, this.getOperand(item)));
+                console.log(this.getScriptFromMarker(script, this.getOperand(item)))
             } else if (item.includes("RET")) {
                 operator = "JMP";
                 operand = jumpBackIndices.pop()
@@ -124,36 +163,6 @@ export default class {
                 ";";
         }
         return stringComposed
-    }
-
-    composeLoopEIL(script) {
-        var splited = this.getSplitedArray(script);
-
-        var initMarkerPos = this.getMarkerPosition(script, "LOOP");
-
-        this.getLoop(script);
-
-
-        let stringComposed = "";
-        for (var i = initMarkerPos; i < splited.length; i++) {
-            var [operator, operand] = "";
-            var item = String(splited[i]);
-
-            if (item.match(/.*\:/) || item.match(/\!.*/))
-                continue;
-            this.getMarkerPosition(script, "LOOP")
-            if (item.includes("(") || item.includes(")")) {
-                operator = item.replace(" ", "").replace("(", "E");
-                operator = (operator == ")") ? "Expression End" : operator;
-            } else {
-                operator = item.substring(0, item.indexOf(" "));
-            }
-            stringComposed = stringComposed +
-                this.operatorsCodes[this.operatorsNames.indexOf(operator)] +
-                item.substring(item.indexOf(" ") + 1, item.length) +
-                ";";
-        }
-        return ""
     }
 
     convertScriptToEIL(script) {

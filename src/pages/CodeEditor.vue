@@ -112,6 +112,17 @@ import "monaco-editor/esm/vs/basic-languages/python/python.contribution.js";
 import { setTimeout } from "timers";
 import EILConverter from "../libraries/EILConverter.js";
 
+var httpPOST = function(url, data = null) {
+  var _url = url;
+  return fetch(_url, {
+    method: "post",
+    body: JSON.stringify(data),
+    cache: "no-store"
+  }).then(function(response) {
+    return response.json();
+  });
+};
+
 export default {
   name: "code_editor",
   data() {
@@ -136,24 +147,18 @@ export default {
       console.log(this.script);
       this.saveScriptDialog = true;
       setTimeout(() => (this.saveScriptDialog = false), 2000);
-      fetch(
-        "http://iotdev.htlwy.ac.at/thing/iotusecases2020/updateThingsscript?keytoken=" +
+
+      httpPOST(
+        "https://iotdev.htlwy.ac.at/thing/iotusecases2020/updateThingsscript?keytoken=" +
           this.$store.state.username +
           ":" +
-          this.$store.state.password +
-          {
-            cache: "no-store",
-            method: "post",
-            body: JSON.stringify({
-              name: this.name,
-              language: this.language,
-              script: this.script
-            })
-          }
-      ).then(data => {
-        console.log(data);
-        this.$store.dispatch("update");
-      });
+          this.$store.state.password,
+        {
+          name: this.name,
+          language: this.language,
+          script: this.script
+        }
+      );
     },
     uploadScript() {
       new EILConverter().convertScriptToEIL(this.script);
