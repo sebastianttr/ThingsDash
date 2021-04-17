@@ -58,14 +58,14 @@
         </q-card>
       </q-dialog>
 
-      <q-dialog v-model="uploadFail" seamless position="bottom">
+      <q-dialog v-model="saveFail" seamless position="bottom">
         <q-card style="width: 350px; " class="bg-red-10">
           <q-card-section class="row items-center no-wrap">
             <div>
-              <div class="text-weight">Failed uploading the script!</div>
+              <div class="text-weight">Failed saving the script!</div>
             </div>
             <q-space/>
-            <q-btn flat position="right" class="bg-red-8" label="Retry" @click="uploadScript()"/>
+            <q-btn flat position="right" class="bg-red-8" label="Retry" @click="saveScript()"/>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -96,6 +96,27 @@
           </q-card-section>
         </q-card>
       </q-dialog>
+
+      <q-dialog v-model="uploadDialog" position="bottom">
+        <q-card style="width: 350px">
+          <q-card-section class="column items-start wrap">
+            <div class="q-mb-sm">
+              <div style="font-size:20px;">Upload to device</div>
+            </div>
+
+            <q-space/>
+            <q-select
+              style="width:100%;"
+              class="q-mb-sm"
+              outlined
+              v-model="model"
+              :options="options"
+              label="Select USB Device"
+            />
+            <q-btn outline rounded style="width:100%;" label="Upload"/>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </q-page>
   </transition-group>
 </template> 
@@ -111,6 +132,7 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution.js";
 import { setTimeout } from "timers";
 import EILConverter from "../libraries/EILConverter.js";
+import JSON5 from "json5";
 
 export default {
   name: "code_editor",
@@ -121,10 +143,12 @@ export default {
       script: this.$route.params.script,
       customeditor: false,
       uploadSuccess: false,
-      uploadFail: false,
+      saveFail: false,
       getFail: false,
       saveScriptDialog: false,
-      options: {}
+      uploadDialog: false,
+      model: null,
+      options: ["Google", "Facebook", "Twitter", "Apple", "Oracle"]
     };
   },
   components: {},
@@ -133,6 +157,7 @@ export default {
       this.script = value;
     },
     async saveScript() {
+      this.saveFail = false;
       this.saveScriptDialog = true;
 
       fetch(
@@ -149,13 +174,39 @@ export default {
           }),
           cache: "no-store"
         }
-      ).then(response => {
-        this.saveScriptDialog = false;
-        console.log("Done");
-      });
+      )
+        .then(response => {
+          this.saveScriptDialog = false;
+          console.log("Done");
+        })
+        .catch(e => {
+          this.saveFail = true;
+        });
     },
-    uploadScript() {
-      new EILConverter().convertScriptToEIL(this.script);
+    async uploadScript() {
+      var scriptConverted = JSON5.stringify(
+        new EILConverter().convertScriptToEIL(this.script)
+      ).replaceAll("'", '"');
+      const filters = [
+        { usbVendorId: 0x1a86, usbProductId: 0x7523 } //CH340
+      ];
+
+      if ("serial" in navigator) {
+        console.log("Compatible!");
+      }
+
+      // Prompt user to select an Arduino Uno device.
+      const port = await navigator.serial.requestPort({ filters });
+      await port.open({ baudRate: 115200 }).catch(e => {});
+
+      const textEncoder = new TextEncoderStream();
+      const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
+      const writer = textEncoder.writable.getWriter();
+      await writer.write(scriptConverted + "\r\n");
+      await writer.releaseLock();
+      textEncoder.writable.close();
+      await writableStreamClosed;
+      await port.close();
     },
     applyAndLeaveEditor() {
       this.saveScript();

@@ -59,7 +59,6 @@ export default class {
                 break;
             } else initScript.push(item);
         }
-        console.log("Init script: " + JSON.stringify(initScript))
         return initScript;
     }
 
@@ -74,7 +73,6 @@ export default class {
                 break;
             } else loopScript.push(item);
         }
-        console.log("Loop script: " + JSON.stringify(loopScript))
         return loopScript;
     }
 
@@ -189,8 +187,10 @@ export default class {
         var loopScript = this.composeLoopEIL(script)
 
 
-        console.log(JSON.stringify(initScript));
-        console.log(JSON.stringify(loopScript));
+        return {
+            init: initScript,
+            loop: loopScript,
+        }
 
     }
 }
