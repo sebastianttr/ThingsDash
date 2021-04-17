@@ -184,9 +184,9 @@ export default {
         });
     },
     async uploadScript() {
-      var scriptConverted = JSON5.stringify(
+      var scriptConverted = JSON.stringify(
         new EILConverter().convertScriptToEIL(this.script)
-      ).replaceAll("'", '"');
+      );
       const filters = [
         { usbVendorId: 0x1a86, usbProductId: 0x7523 } //CH340
       ];
@@ -202,7 +202,7 @@ export default {
       const textEncoder = new TextEncoderStream();
       const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
       const writer = textEncoder.writable.getWriter();
-      await writer.write(scriptConverted + "\r\n");
+      await writer.write(scriptConverted + "\n");
       await writer.releaseLock();
       textEncoder.writable.close();
       await writableStreamClosed;

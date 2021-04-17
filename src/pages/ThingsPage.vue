@@ -84,7 +84,7 @@ export default {
           JSON.stringify({
             name: msg.name,
             language: msg.language,
-            script: "INIT:\nLD 10\nST a\n\nLOOP:\n"
+            script: "INIT:\nLD 10\nST a\n!INIT\nLOOP:\n\n!INIT\n"
           }) +
           "",
         { cache: "no-cache" }
@@ -95,7 +95,7 @@ export default {
           params: {
             name: msg.name,
             language: "EIL",
-            script: "INIT:\nLD 10\nST a\n\nLOOP:\n"
+            script: "INIT:\nLD 10\nST a\n!INIT\nLOOP:\n\n!INIT\n"
           }
         });
       });
