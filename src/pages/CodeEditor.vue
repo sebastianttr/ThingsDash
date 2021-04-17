@@ -91,7 +91,7 @@
         <q-card style="width: 350px; background-color:#00cc66;">
           <q-card-section class="row items-center no-wrap">
             <div>
-              <div class="text-weight">Saved script!</div>
+              <div class="text-weight">Saving script ...</div>
             </div>
           </q-card-section>
         </q-card>
@@ -111,17 +111,6 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api.js";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution.js";
 import { setTimeout } from "timers";
 import EILConverter from "../libraries/EILConverter.js";
-
-var httpPOST = function(url, data = null) {
-  var _url = url;
-  return fetch(_url, {
-    method: "post",
-    body: JSON.stringify(data),
-    cache: "no-store"
-  }).then(function(response) {
-    return response.json();
-  });
-};
 
 export default {
   name: "code_editor",
@@ -143,22 +132,27 @@ export default {
     onChange(value) {
       this.script = value;
     },
-    saveScript() {
-      console.log(this.script);
+    async saveScript() {
       this.saveScriptDialog = true;
-      setTimeout(() => (this.saveScriptDialog = false), 2000);
 
-      httpPOST(
+      fetch(
         "https://iotdev.htlwy.ac.at/thing/iotusecases2020/updateThingsscript?keytoken=" +
           this.$store.state.username +
           ":" +
           this.$store.state.password,
         {
-          name: this.name,
-          language: this.language,
-          script: this.script
+          method: "post",
+          body: JSON.stringify({
+            name: this.name,
+            language: this.language,
+            script: this.script
+          }),
+          cache: "no-store"
         }
-      );
+      ).then(response => {
+        this.saveScriptDialog = false;
+        console.log("Done");
+      });
     },
     uploadScript() {
       new EILConverter().convertScriptToEIL(this.script);
@@ -181,6 +175,10 @@ export default {
     },
     configureEILCompletion(monaco) {
       monaco.languages.register({ id: "instructionlist" });
+      //console.log(new EILConverter().operatorsNames.length);
+      //console.log(new EILConverter().operatorsNamesCompletion.length);
+      //console.log(new EILConverter().operatorsCodes.length);
+
       var themeToken = [];
       themeToken.push([/\/\/.*/, "comment"]);
       themeToken.push([/\".*\"/, "string"]);
